@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Mark Attendance</title>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+        background-color: #f4f4f4;
+    }
+    h2 {
+        color: #333;
+    }
+    form {
+        background-color: white;
+        padding: 25px;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        max-width: 400px;
+    }
+    label {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+    input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+    button {
+        margin-top: 20px;
+        padding: 10px 16px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #45a049;
+    }
+    .back-link {
+        display: inline-block;
+        margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Mark Attendance</h2>
+
+<form th:action="@{/mark-attendance}" th:object="${attendance}" method="post">
+
+  <label>Student Name</label>
+  <input type="text" th:field="*{studentName}" required>
+
+  <label>Date</label>
+  <input type="text" th:field="*{date}" placeholder="YYYY-MM-DD" required>
+
+  <label>Time</label>
+  <input type="text" th:field="*{time}" placeholder="HH:MM:SS" required>
+
+  <button type="submit">Mark Attendance</button>
+</form>
+
+<a class="back-link" th:href="@{/attendance}">&larr; Back to Attendance List</a>
+
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #2c3e50;
+        }
+
+        h1 {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        h2 {
+            margin: 20px 30px 10px;
+        }
+
+        nav {
+            background-color: #34495e;
+            padding: 10px 20px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 14px;
+            border-radius: 4px;
+        }
+
+        nav ul li a:hover {
+            background-color: #1abc9c;
+        }
+
+        .stats-box {
+            background: white;
+            margin: 20px 30px;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            max-width: 400px;
+        }
+
+        .stats-box p {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .stats-box span {
+            font-weight: bold;
+            color: #1abc9c;
+        }
+
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+            margin: 20px 30px;
+        }
+
+        button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+<h1>Dashboard</h1>
+
+<nav>
+    <ul>
+        <li><a th:href="@{/students/view}">View Students</a></li>
+        <li><a th:href="@{/students/add}">Add Student</a></li>
+        <li><a th:href="@{/attendance/view}">View Attendance</a></li>
+    </ul>
+</nav>
+
+<h2>Quick Stats</h2>
+<div class="stats-box">
+    <p>Total Students: <span id="studentCount">Loading...</span></p>
+    <p>Total Attendance Records: <span id="attendanceCount">Loading...</span></p>
+</div>
+
+<button id="logoutBtn">Logout</button>
+
+<script>
+    const token = localStorage.getItem('jwtToken');
+
+    if (!token) {
+        window.location.href = '/login';
+    }
+
+    async function loadStats() {
+        try {
+            const studentsResponse = await fetch('/api/students', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const students = await studentsResponse.json();
+            document.getElementById('studentCount').innerText = students.length;
+
+            const attendanceResponse = await fetch('/api/attendance/all', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const attendance = await attendanceResponse.json();
+            document.getElementById('attendanceCount').innerText = attendance.length;
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+
+    loadStats();
+
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        localStorage.removeItem('jwtToken');
+        window.location.href = '/login';
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f4f6f8;
+            color: #2c3e50;
+        }
+
+        h1 {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px 30px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        form input:focus {
+            outline: none;
+            border-color: #1abc9c;
+        }
+
+        button {
+            background-color: #1abc9c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #16a085;
+        }
+
+        #message {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+<h1>Register</h1>
+
+<form id="registerForm">
+    <label>Username:</label>
+    <input type="text" id="username" required>
+
+    <label>Password:</label>
+    <input type="password" id="password" required>
+
+    <button type="submit">Register</button>
+</form>
+
+<p id="message"></p>
+
+<script>
+    document.getElementById('registerForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        const response = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: username, password: password })
+        });
+
+        if (response.ok) {
+            document.getElementById('message').innerText = 'Registered successfully! You can now login.';
+        } else {
+            document.getElementById('message').innerText = 'Registration failed.';
+        }
+    });
+</script>
+</body>
+</html>
