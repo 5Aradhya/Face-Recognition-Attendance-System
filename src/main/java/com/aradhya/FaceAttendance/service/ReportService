@@ -1,59 +1,101 @@
 package com.aradhya.FaceAttendance.service;
 
-import com.aradhya.FaceAttendance.entity.Student;
-import com.aradhya.FaceAttendance.repository.StudentRepository;
+import com.aradhya.FaceAttendance.entity.Attendance;
+import com.lowagie.text.Document;
+import com.lowagie.text.Element;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.aradhya.FaceAttendance.dto.StudentDTO;
-import java.util.stream.Collectors;
-
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 @Service
-public class StudentService {
+public class ReportService {
+
     @Autowired
-    private StudentRepository studentRepository;
+    private AttendanceService attendanceService;
 
-    public List<Student> getAllStudents(){
-        return studentRepository.findAll();
+    public byte[] generateExcelReport() throws IOException {
+        List<Attendance> records = attendanceService.getAllAttendance();
+
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Attendance");
+
+        String[] headers = {"ID", "Student Name", "Roll Number", "Date", "Time"};
+
+        Row headerRow = sheet.createRow(0);
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+            sheet.setColumnWidth(i, 6000);
+        }
+
+        int rowNumber = 1;
+        for (Attendance attendance : records) {
+            Row row = sheet.createRow(rowNumber);
+            row.createCell(0).setCellValue(attendance.getId());
+            row.createCell(1).setCellValue(attendance.getStudent().getName());
+            row.createCell(2).setCellValue(attendance.getStudent().getRollNumber());
+            row.createCell(3).setCellValue(attendance.getDate().toString());
+            row.createCell(4).setCellValue(attendance.getTime().toString());
+            rowNumber++;
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+
+        return outputStream.toByteArray();
     }
 
-    public void addStudent(Student student){
-        studentRepository.save(student);
-    }
-    public Student getStudentById(Long id){
-        return studentRepository.findById(id).orElse(null);
-    }
+    public byte[] generatePdfReport() throws Exception {
+        List<Attendance> records = attendanceService.getAllAttendance();
 
-    public Student updateStudent(Long id, Student updatedStudent){
-        Student existingStudent = studentRepository.findById(id).orElseThrow(()->new RuntimeException("Student not found with id"+id));
-        existingStudent.setName(updatedStudent.getName());
-        existingStudent.setRollNumber(updatedStudent.getRollNumber());
-        existingStudent.setEmail(updatedStudent.getEmail());
-        existingStudent.setPhotoPath(updatedStudent.getPhotoPath());
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Document document = new Document();
+        PdfWriter.getInstance(document, outputStream);
+        document.open();
 
-        return studentRepository.save(existingStudent);
-    }
+        Font titleFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 16);
+        Paragraph title = new Paragraph("Attendance Report", titleFont);
+        title.setAlignment(Element.ALIGN_CENTER);
+        title.setSpacingAfter(15);
+        document.add(title);
 
-    public void deleteStudent(Long id){
-        studentRepository.deleteById(id);
-    }
+        PdfPTable table = new PdfPTable(5);
+        table.setWidthPercentage(100);
 
-    public StudentDTO convertToDTO(Student student){
-        StudentDTO dto = new StudentDTO();
-        dto.setId(student.getId());
-        dto.setName(student.getName());
-        dto.setRollNumber(student.getRollNumber());
-        dto.setEmail(student.getEmail());
-        dto.setPhotoPath(student.getPhotoPath());
-        return dto;
-    }
+        Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11);
+        String[] headers = {"ID", "Student Name", "Roll Number", "Date", "Time"};
+        for (String header : headers) {
+            PdfPCell headerCell = new PdfPCell(new Phrase(header, headerFont));
+            table.addCell(headerCell);
+        }
 
-    public List<StudentDTO> getAllStudentDTOs(){
-        return getAllStudents()
-                .stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        for (Attendance attendance : records) {
+            table.addCell(String.valueOf(attendance.getId()));
+            table.addCell(attendance.getStudent().getName());
+            table.addCell(attendance.getStudent().getRollNumber());
+            table.addCell(attendance.getDate().toString());
+            table.addCell(attendance.getTime().toString());
+        }
+
+        document.add(table);
+        document.close();
+
+        return outputStream.toByteArray();
     }
 }
