@@ -4,71 +4,172 @@
   <meta charset="UTF-8">
   <title>Mark Attendance</title>
   <style>
-    body {
-        font-family: Arial, sans-serif;
-        margin: 40px;
-        background-color: #f4f4f4;
-    }
-    h2 {
-        color: #333;
-    }
-    form {
-        background-color: white;
-        padding: 25px;
-        border-radius: 6px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        max-width: 400px;
-    }
-    label {
-        display: block;
-        margin-top: 15px;
-        margin-bottom: 5px;
-        font-weight: bold;
-    }
-    input {
-        width: 100%;
-        padding: 8px;
+    * {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        background-color: #f4f6f8;
+        color: #2c3e50;
+    }
+
+    header {
+        background-color: #2c3e50;
+        padding: 20px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    header h1 {
+        color: white;
+        font-size: 26px;
+    }
+
+    header a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+    }
+
+    header a:hover {
+        background-color: #1abc9c;
+    }
+
+    nav {
+        background-color: #34495e;
+        padding: 10px 20px;
+    }
+
+    nav ul {
+        list-style: none;
+        display: flex;
+        gap: 20px;
+    }
+
+    nav ul li a {
+        color: white;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: 4px;
+    }
+
+    nav ul li a:hover {
+        background-color: #1abc9c;
+    }
+
+    .form-box {
+        max-width: 450px;
+        margin: 50px auto;
+        background-color: white;
+        padding: 30px;
+        border-top: 4px solid #1abc9c;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .form-box h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-box label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+    }
+
+    .form-box input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 16px;
         border: 1px solid #ccc;
         border-radius: 4px;
+        font-size: 14px;
     }
-    button {
-        margin-top: 20px;
-        padding: 10px 16px;
-        background-color: #4CAF50;
+
+    .form-box input:focus {
+        outline: none;
+        border-color: #1abc9c;
+    }
+
+    .form-box button {
+        width: 100%;
+        background-color: #1abc9c;
         color: white;
         border: none;
+        padding: 12px;
         border-radius: 4px;
+        font-size: 15px;
         cursor: pointer;
     }
-    button:hover {
-        background-color: #45a049;
+
+    .form-box button:hover {
+        background-color: #16a085;
     }
+
     .back-link {
-        display: inline-block;
+        display: block;
+        text-align: center;
         margin-top: 15px;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1abc9c;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        color: #16a085;
+    }
+
+    footer {
+        background-color: #2c3e50;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        margin-top: 60px;
     }
   </style>
 </head>
 <body>
+<header>
+  <h1>Face Attendance System</h1>
+  <a th:href="@{/dashboard}">Dashboard</a>
+</header>
 
-<h2>Mark Attendance</h2>
+<nav>
+  <ul>
+    <li><a th:href="@{/students/view}">View Students</a></li>
+    <li><a th:href="@{/students/add}">Add Student</a></li>
+    <li><a th:href="@{/attendance}">View Attendance</a></li>
+  </ul>
+</nav>
 
-<form th:action="@{/mark-attendance}" th:object="${attendance}" method="post">
+<div class="form-box">
+  <h2>Mark Attendance</h2>
 
-  <label>Student Name</label>
-  <input type="text" th:field="*{studentName}" required>
+  <form th:action="@{/mark-attendance}" th:object="${attendance}" method="post">
+    <label>Roll Number:</label>
+    <input type="text" th:field="*{rollNumber}" required>
 
-  <label>Date</label>
-  <input type="text" th:field="*{date}" placeholder="YYYY-MM-DD" required>
+    <label>Date:</label>
+    <input type="text" th:field="*{date}" placeholder="YYYY-MM-DD" required>
 
-  <label>Time</label>
-  <input type="text" th:field="*{time}" placeholder="HH:MM:SS" required>
+    <label>Time:</label>
+    <input type="text" th:field="*{time}" placeholder="HH:MM:SS" required>
 
-  <button type="submit">Mark Attendance</button>
-</form>
+    <button type="submit">Mark Attendance</button>
+  </form>
 
-<a class="back-link" th:href="@{/attendance}">&larr; Back to Attendance List</a>
+  <a class="back-link" th:href="@{/attendance}">&larr; Back to Attendance List</a>
+</div>
 
+<footer>
+  <p>&copy; 2026 Face Attendance System</p>
+</footer>
 </body>
 </html>
