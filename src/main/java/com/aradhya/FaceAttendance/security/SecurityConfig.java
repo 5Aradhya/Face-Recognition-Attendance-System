@@ -35,11 +35,12 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/dashboard", "/css/**", "/students/view", "/students/add").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/dashboard", "/css/**", "/students/view", "/students/add", "/students/edit/**", "/students/update/**", "/students/delete/**", "/attendance", "/mark-attendance", "/error").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/attendance/mark").permitAll()
-                        .requestMatchers("/students/delete/**").hasRole("ADMIN")
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
